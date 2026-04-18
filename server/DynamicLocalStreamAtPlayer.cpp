@@ -48,12 +48,11 @@ DynamicLocalStreamAtPlayer::DynamicLocalStreamAtPlayer(
 		PlayerSortList playerList;
 
 		const Vector3& streamPosition = player->getPosition();
-		const Vector3& cameraPosition = player->getCameraPosition();
 
 		for (IPlayer* other : PlayerStore::internalPlayerPool)
 		{
 			float distanceToPlayer = glm::distance(other->getPosition(), streamPosition);
-			float distanceToCamera = glm::distance(other->getCameraPosition(), streamPosition);
+			float distanceToCamera = glm::distance(other->getAimData().camPos, streamPosition);
 			float minDistance = std::min(distanceToPlayer, distanceToCamera);
 
 			if (other != player && PlayerStore::IsPlayerHasPlugin(other->getID()))
@@ -93,7 +92,7 @@ void DynamicLocalStreamAtPlayer::Tick()
 		for (IPlayer* other : PlayerStore::internalPlayerPool)
 		{
 			float distanceToPlayer = glm::distance(other->getPosition(), streamPosition);
-			float distanceToCamera = glm::distance(other->getCameraPosition(), streamPosition);
+			float distanceToCamera = glm::distance(other->getAimData().camPos, streamPosition);
 			float minDistance = std::min(distanceToPlayer, distanceToCamera);
 			
 			if (other != player && PlayerStore::IsPlayerHasPlugin(other->getID()))
