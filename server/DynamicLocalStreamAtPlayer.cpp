@@ -48,16 +48,19 @@ DynamicLocalStreamAtPlayer::DynamicLocalStreamAtPlayer(
 		PlayerSortList playerList;
 
 		const Vector3& streamPosition = player->getPosition();
+		const Vector3& cameraPosition = player->getCameraPosition();
 
 		for (IPlayer* other : PlayerStore::internalPlayerPool)
 		{
 			float distanceToPlayer = glm::distance(other->getPosition(), streamPosition);
+			float distanceToCamera = glm::distance(other->getCameraPosition(), streamPosition);
+			float minDistance = std::min(distanceToPlayer, distanceToCamera);
 
 			if (other != player && PlayerStore::IsPlayerHasPlugin(other->getID()))
 			{
-				if (distanceToPlayer <= distance && player->getInterior() == other->getInterior() && player->getVirtualWorld() == other->getVirtualWorld())
+				if (minDistance <= distance && player->getInterior() == other->getInterior() && player->getVirtualWorld() == other->getVirtualWorld())
 				{
-					playerList.emplace(distanceToPlayer, other->getID());
+					playerList.emplace(minDistance, other->getID());
 				}
 			}
 		}
@@ -90,14 +93,16 @@ void DynamicLocalStreamAtPlayer::Tick()
 		for (IPlayer* other : PlayerStore::internalPlayerPool)
 		{
 			float distanceToPlayer = glm::distance(other->getPosition(), streamPosition);
-
+			float distanceToCamera = glm::distance(other->getCameraPosition(), streamPosition);
+			float minDistance = std::min(distanceToPlayer, distanceToCamera);
+			
 			if (other != player && PlayerStore::IsPlayerHasPlugin(other->getID()))
 			{
-				if (distanceToPlayer <= streamDistance && player->getInterior() == other->getInterior() && player->getVirtualWorld() == other->getVirtualWorld())
+				if (minDistance <= streamDistance && player->getInterior() == other->getInterior() && player->getVirtualWorld() == other->getVirtualWorld())
 				{
 					if (!this->HasListener(other->getID()))
 					{
-						playerList.emplace(distanceToPlayer, other->getID());
+						playerList.emplace(minDistance, other->getID());
 					}
 				}
 				else if (this->HasListener(other->getID()))
