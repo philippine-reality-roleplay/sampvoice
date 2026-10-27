@@ -21,12 +21,9 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Install CMake
-        uses: lukka/get-cmake@latest
-        with:
-          cmakeVersion: '3.5'
-
       - name: Generate build files
+        env:
+            CMAKE_POLICY_VERSION_MINIMUM: "3.5"
         run: |
           mkdir build
           cd build
