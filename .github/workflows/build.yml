@@ -24,13 +24,13 @@ jobs:
       - name: Install CMake
         uses: lukka/get-cmake@latest
         with:
-          cmakeVersion: '3.23.2'
+          cmakeVersion: '3.5'
 
       - name: Generate build files
         run: |
           mkdir build
           cd build
-          cmake -G "Visual Studio 17 2022" -A Win32 .. 
+          cmake -G "Visual Studio 18 2026" -A Win32 ..
           cmake --build . --config Release
 
       - name: Upload artifacts
