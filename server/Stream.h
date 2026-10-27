@@ -60,6 +60,11 @@ public:
 	bool DetachSpeaker(uint16_t playerId) noexcept;
 	std::vector<uint16_t> DetachAllSpeakers();
 
+	virtual int GetPriority() const noexcept
+	{
+		return 0;
+	}
+
 	void SetParameter(uint8_t parameter, float value) noexcept;
 	void ResetParameter(uint8_t parameter) noexcept;
 	bool HasParameter(uint8_t parameter) const noexcept;

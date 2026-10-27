@@ -32,6 +32,11 @@ public:
 public:
 
 	void UpdateDistance(float distance);
+	
+	int GetPriority() const noexcept override
+	{
+		return 1;
+	}
 
 protected:
 

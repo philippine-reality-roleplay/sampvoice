@@ -27,6 +27,11 @@ public:
 
 	explicit GlobalStream(uint32_t color, const std::string& name);
 
+	int GetPriority() const noexcept override
+	{
+		return 2;
+	}
+
 	~GlobalStream() noexcept = default;
 
 };

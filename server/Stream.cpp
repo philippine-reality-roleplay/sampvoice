@@ -49,11 +49,47 @@ void Stream::SendVoicePacket(VoicePacket& voicePacket) const
 	voicePacket.stream = reinterpret_cast<uint32_t>(this);
 	voicePacket.CalcHash();
 
+	std::vector<const Stream*> higher;
+	{
+		PlayerInfo* info = PlayerStore::RequestPlayerWithSharedAccess(voicePacket.sender);
+		if (info != nullptr)
+		{
+			for (const auto stream : info->speakerStreams)
+			{
+				if (stream != this && stream->GetPriority() > this->GetPriority())
+				{
+					higher.push_back(stream);
+				}
+			}
+		}
+		PlayerStore::ReleasePlayerWithSharedAccess(voicePacket.sender);
+	}
+
 	IPlayerPool* playerPool = SampVoiceComponent::GetPlayers();
 	for (IPlayer* player : playerPool->entries())
 	{
-		if (this->HasListener(player->getID()) && PlayerStore::IsPlayerConnected(player->getID()) && player->getID() != voicePacket.sender)
-			NetHandler::SendVoicePacket(player->getID(), voicePacket);
+		const auto id = player->getID();
+		if (!this->HasListener(id) || !PlayerStore::IsPlayerConnected(id) || id == voicePacket.sender)
+		{
+			continue;
+		}
+
+		bool covered = false;
+		for (const Stream* stream : higher)
+		{
+			if (stream->HasListener(id))
+			{
+				covered = true;
+				break;
+			}
+		}
+
+		if (covered)
+		{
+			continue;
+		}
+		
+		NetHandler::SendVoicePacket(id, voicePacket);
 	}
 }
 
